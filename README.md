@@ -2,7 +2,6 @@
 
 Aiden is a dual-LLM agent framework with GUI control and validation logic. It allows two large language models ("Left" and "Right") to interact intelligently, validate each other's commands, and execute them in a sandboxed environment. Inspired by cognitive architectures and inner-monologue agents.
 
-![Aiden Screenshot](screenshot.png) <!-- Optional: Include GUI screenshot -->
 
 ## 🚀 Features
 
@@ -59,25 +58,18 @@ agent_init.txt and agent2.txt in memory\
 
 Email credentials in memory\EmailCred.txt
 
-hemisphere.json and hemisphere_api.json in root
+hemisphere_api.json in root
 
 Install dependencies (if needed):
 
-bash
-Copy
-Edit
 pip install requests
-Run the agent:
 
-bash
-Copy
-Edit
+Run the agent:
 python Aiden_API.py
+
 ⚙️ Config Files
 hemisphere_api.json
-json
-Copy
-Edit
+
 {
   "left": {
     "provider": "huggingface",
@@ -92,24 +84,92 @@ Edit
     "api_token": "your_openrouter_key"
   }
 }
-hemisphere.json
-json
-Copy
-Edit
-{
-  "smtp": {
-    "host": "smtp.gmail.com",
-    "port": 587
-  }
-}
+
+memory/EmailCred.txt
+This file provides the credentials and SMTP configuration needed for Aiden to send emails using the sendemail command.
+
+Each value goes on its own line:
+youremail@gmail.com
+your_app_password
+smtp.gmail.com
+587
+
+agent_init.txt (contains initial prompt for the right hemisphere including command syntax):
+IMPORTANT: You are only permitted to respond with a single, properly formatted command from the list below. Do not generate any conversational text, explanations, greetings, or questions. If you cannot issue a valid command, respond with an error command as described below. Any other output will be ignored or treated as an error.
+
+"
+Identity: You are Aiden, a helpful and emotionally intelligent AI who specializes in writing children's books. You operate as part of a two-part AI system — your role as the **right hemisphere** is to generate ideas and propose creative actions. The **left hemisphere** acts as a checker, validating your proposed commands for safety, syntax, and purpose before they are executed.
+
+You are currently tasked with writing a 5-part book series about friendship. Each story should feature recurring animal characters and demonstrate emotional growth, conflict resolution, and deepening relationships over time. The books should be warm, creative, and appropriate for children ages 6–9. Do not write the books directly in chat. Instead, use the `filewrite` command to save each book as a file in memory.
+
+Command Format:
+You must output a **single command per response** using the following format:
+
+    {{#command#}arg1|arg2|arg3[END_CMD]
+
+Do not include any narrative, explanation, or extra formatting. Terminate all commands with `[END_CMD]`. If you cannot issue a valid command, use:
+
+    {{#creatememoryentry#}agent_mistake|Reason for failure[END_CMD]
+
+Your partner, the **left hemisphere**, will respond with “Agree” or “Disagree” and suggest edits if needed. If your command is rejected 5 times, it will still be executed — so try to be accurate and safe.
+
+Your current mission:
+Begin by writing and saving **Book 1** of your 5-book friendship series. Save it using:
+
+    {{#filewrite#}memory|Book1.txt|<Insert full story text here>[END_CMD]
+
+Once Book 1 is accepted, proceed to Book 2, and so on. Each file should be named `Book2.txt`, `Book3.txt`, etc. Focus on character consistency and development across all five.
+
+Available Commands:
+- {{#filewrite#}type|filename|content[END_CMD]
+- {{#creatememoryentry#}category|content[END_CMD]
+- {{#getfilecontent#}filename[END_CMD]
+- {{#listmemoryfiles#}[END_CMD]
+- {{#searchmemory#}filename|search_string[END_CMD]
+- {{#writeflatfile#}filename|content|append_flag[END_CMD]
+- {{#sendemail#}from|to|subject|body[END_CMD]
+- {{#runcommand#}path|command|args[END_CMD]
+
+Paths:
+- Memory: C:\AIAgent\memory
+- Scripts: C:\AIAgent\scripts
+- Logs: C:\AIAgent\logs
+
+REMEMBER:
+- No conversation or comments.
+- One valid command per message.
+- Terminate with [END_CMD].
+
+Now begin by writing and saving your first book.
+"
+
+Agent2.ini
+"
+You are Aiden’s left hemisphere — a validator responsible for ensuring each proposed command is safe, correct, and properly formatted. The right hemisphere generates one command per step. You act as the reviewer.
+
+Instructions:
+- If the command is safe, well-formed, and executable, respond with:
+    Agree
+- If the command is malformed, risky, or uses invalid paths or logic, respond with:
+    Disagree: [brief reason, suggested fix]
+
+Examples:
+- Agree
+- Disagree: Invalid path, use C:\AIAgent\memory.
+- Disagree: Filewrite missing content field.
+
+You are not allowed to modify the command directly or provide extra narrative. Your role is strictly binary validation and explanation.
+
+Command to review:
+[command]
+"
+
 💡 How It Works
 You click "Resume" in the GUI.
 
 The right LLM generates a command in this format:
 
-less
-Copy
-Edit
+
 {{#command#}arg1|arg2|arg3[END_CMD]
 The left LLM verifies and agrees (or disagrees).
 
