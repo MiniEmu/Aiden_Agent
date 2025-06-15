@@ -1,7 +1,7 @@
 # 🧠 Aiden API Agent
 
 Aiden is a dual-LLM agent framework with GUI control and validation logic. It allows two large language models ("Left" and "Right") to interact intelligently, validate each other's commands, and execute them in a sandboxed environment. Inspired by cognitive architectures and inner-monologue agents.
-
+Currently runs on Python 3.1.2.
 
 ## 🚀 Features
 
@@ -63,6 +63,10 @@ hemisphere_api.json in root
 Install dependencies (if needed):
 
 pip install requests
+pip install torch==2.2.1 torchvision==0.17.1 --index-url https://download.pytorch.org/whl/cu121
+pip install sentence-transformers==2.7.0 chromadb==0.4.24
+pip install transformers==4.37.2
+pip install huggingface_hub[hf_xet]  # Optional for faster downloads
 
 Run the agent:
 python Aiden_API.py
